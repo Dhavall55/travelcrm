@@ -1,7 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useStore, Itinerary, ItineraryDay, ItineraryItem, Customer } from '@/lib/store';
+import ClientProposalView from '@/components/proposal/ClientProposalView';
+import ProposalThemePicker from '@/components/proposal/ProposalThemePicker';
+import {
+  buildProposalShareUrl,
+  ProposalThemeId,
+  resolveProposalTheme,
+} from '@/lib/proposalThemes';
 import { 
   Compass, 
   Plus, 
@@ -36,25 +43,30 @@ const iconMap = {
 };
 
 export default function ItineraryPage() {
-  const { 
-    itineraries, 
-    currentAgency, 
-    customers, 
-    addItinerary, 
-    updateItinerary, 
-    addItineraryDay, 
-    deleteItineraryDay, 
-    addItineraryItem, 
-    deleteItineraryItem, 
-    reorderItineraryDays,
-    logAction 
-  } = useStore();
+  const itineraries = useStore((state) => state.itineraries);
+  const currentAgency = useStore((state) => state.currentAgency);
+  const customers = useStore((state) => state.customers);
+  const addItinerary = useStore((state) => state.addItinerary);
+  const updateItinerary = useStore((state) => state.updateItinerary);
+  const addItineraryDay = useStore((state) => state.addItineraryDay);
+  const updateItineraryDay = useStore((state) => state.updateItineraryDay);
+  const deleteItineraryDay = useStore((state) => state.deleteItineraryDay);
+  const addItineraryItem = useStore((state) => state.addItineraryItem);
+  const deleteItineraryItem = useStore((state) => state.deleteItineraryItem);
+  const reorderItineraryDays = useStore((state) => state.reorderItineraryDays);
+  const logAction = useStore((state) => state.logAction);
 
-  const agencyItineraries = itineraries.filter(i => i.agencyId === currentAgency.id);
-  const agencyCustomers = customers.filter(c => c.agencyId === currentAgency.id);
+  const agencyItineraries = useMemo(
+    () => itineraries.filter((i) => i.agencyId === currentAgency.id),
+    [itineraries, currentAgency.id]
+  );
+  const agencyCustomers = useMemo(
+    () => customers.filter((c) => c.agencyId === currentAgency.id),
+    [customers, currentAgency.id]
+  );
 
   // States
-  const [selectedItinId, setSelectedItinId] = useState<string>('');
+  const [selectedItinId, setSelectedItinId] = useState('');
   const [showAddItinModal, setShowAddItinModal] = useState(false);
   const [showAddItemModal, setShowAddItemModal] = useState<{ dayId: string } | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -75,15 +87,44 @@ export default function ItineraryPage() {
   const [itemCost, setItemCost] = useState('');
   const [itemSelling, setItemSelling] = useState('');
 
-  // Select first itinerary on mount if exists
+  // Keep selected plan in sync with the agency's available itineraries
   useEffect(() => {
-    if (agencyItineraries.length > 0 && !selectedItinId) {
+    if (agencyItineraries.length === 0) {
+      if (selectedItinId) setSelectedItinId('');
+      return;
+    }
+    if (!selectedItinId || !agencyItineraries.some((i) => i.id === selectedItinId)) {
       setSelectedItinId(agencyItineraries[0].id);
     }
   }, [agencyItineraries, selectedItinId]);
 
-  const activeItinerary = agencyItineraries.find(i => i.id === selectedItinId);
+  // Subscribe directly to the active itinerary in the store so day changes always re-render
+  const activeItinerary = useStore(
+    useCallback(
+      (state) =>
+        state.itineraries.find(
+          (i) => i.id === selectedItinId && i.agencyId === state.currentAgency.id
+        ),
+      [selectedItinId]
+    )
+  );
   const clientProfile = agencyCustomers.find(c => c.id === activeItinerary?.customerId);
+  const proposalTheme = resolveProposalTheme(activeItinerary?.proposalTheme);
+  const clientName = clientProfile
+    ? `${clientProfile.firstName} ${clientProfile.lastName}`
+    : undefined;
+
+  const shareUrl =
+    typeof window !== 'undefined' && activeItinerary
+      ? buildProposalShareUrl(window.location.origin, activeItinerary.id, proposalTheme)
+      : activeItinerary
+        ? buildProposalShareUrl('', activeItinerary.id, proposalTheme)
+        : '';
+
+  const handleProposalThemeChange = (theme: ProposalThemeId) => {
+    if (!activeItinerary) return;
+    updateItinerary(activeItinerary.id, { proposalTheme: theme });
+  };
 
   const handleCreateItin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,22 +153,30 @@ export default function ItineraryPage() {
 
   const handleAddDay = () => {
     if (!activeItinerary) return;
-    const dayNum = activeItinerary.days.length + 1;
-    addItineraryDay(activeItinerary.id, `Day ${dayNum}: Tour Schedule`, 'Describe the sights to visit.');
+
+    const dayNum = (activeItinerary.days?.length ?? 0) + 1;
+    addItineraryDay(
+      activeItinerary.id,
+      `Day ${dayNum}: Tour Schedule`,
+      'Describe the sights to visit.'
+    );
   };
 
   const handleMoveDay = (index: number, direction: 'up' | 'down') => {
     if (!activeItinerary) return;
-    const days = [...activeItinerary.days];
+
+    const itinerary = useStore.getState().itineraries.find((i) => i.id === activeItinerary.id);
+    if (!itinerary) return;
+
+    const days = [...(itinerary.days ?? [])];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    
+
     if (targetIndex < 0 || targetIndex >= days.length) return;
-    
-    // Swap
+
     const temp = days[index];
     days[index] = days[targetIndex];
     days[targetIndex] = temp;
-    
+
     reorderItineraryDays(activeItinerary.id, days);
   };
 
@@ -157,10 +206,10 @@ export default function ItineraryPage() {
 
     setTimeout(() => {
       // Create a day
-      const dayNum = activeItinerary.days.length + 1;
+      const dayNum = (activeItinerary.days?.length ?? 0) + 1;
       addItineraryDay(
-        activeItinerary.id, 
-        `Day ${dayNum}: Custom AI Schedule`, 
+        activeItinerary.id,
+        `Day ${dayNum}: Custom AI Schedule`,
         `AI generated schedule tailored for: "${aiPrompt}"`
       );
 
@@ -328,10 +377,11 @@ export default function ItineraryPage() {
             </div>
 
             {/* Days Section */}
-            <div className="space-y-4">
+            <div className="space-y-4" key={`${activeItinerary.id}-${activeItinerary.days?.length ?? 0}`}>
               <div className="flex justify-between items-center">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Itinerary Day Cards</h2>
                 <button
+                  type="button"
                   onClick={handleAddDay}
                   className="px-3 py-1.5 bg-secondary hover:bg-accent border border-border rounded-lg font-bold flex items-center space-x-1"
                 >
@@ -340,7 +390,7 @@ export default function ItineraryPage() {
                 </button>
               </div>
 
-              {activeItinerary.days.map((day, idx) => (
+              {(activeItinerary.days ?? []).map((day, idx) => (
                 <div key={day.id} className="p-4 bg-card border border-border rounded-xl space-y-4">
                   {/* Day Header */}
                   <div className="flex justify-between items-center border-b border-border/40 pb-2.5">
@@ -351,11 +401,9 @@ export default function ItineraryPage() {
                       <input
                         type="text"
                         value={day.title}
-                        onChange={(e) => {
-                          const daysCopy = [...activeItinerary.days];
-                          daysCopy[idx] = { ...day, title: e.target.value };
-                          updateItinerary(activeItinerary.id, { days: daysCopy });
-                        }}
+                        onChange={(e) =>
+                          updateItineraryDay(activeItinerary.id, day.id, { title: e.target.value })
+                        }
                         className="font-bold text-xs bg-transparent border-b border-transparent hover:border-border focus:border-primary focus:outline-none px-1"
                       />
                     </div>
@@ -387,11 +435,9 @@ export default function ItineraryPage() {
                   {/* Day Description */}
                   <textarea
                     value={day.description}
-                    onChange={(e) => {
-                      const daysCopy = [...activeItinerary.days];
-                      daysCopy[idx] = { ...day, description: e.target.value };
-                      updateItinerary(activeItinerary.id, { days: daysCopy });
-                    }}
+                    onChange={(e) =>
+                      updateItineraryDay(activeItinerary.id, day.id, { description: e.target.value })
+                    }
                     rows={2}
                     className="w-full px-2.5 py-1.5 rounded-lg bg-secondary/30 border border-border/40 focus:outline-none focus:border-primary resize-none text-[11px] text-muted-foreground"
                   />
@@ -437,7 +483,7 @@ export default function ItineraryPage() {
                   </div>
                 </div>
               ))}
-              {activeItinerary.days.length === 0 && (
+              {(activeItinerary.days ?? []).length === 0 && (
                 <div className="text-center py-10 bg-card border border-dashed border-border rounded-xl text-muted-foreground">
                   No days mapped yet. Click "Add Day" above to start segmenting the tour schedule.
                 </div>
@@ -446,10 +492,12 @@ export default function ItineraryPage() {
           </div>
 
           {/* Right panel: Live Preview & Invoice computations (2 columns) */}
-          <div className="lg:col-span-2 space-y-6 lg:sticky lg:top-6 no-print">
+          <div className="lg:col-span-2 space-y-6 lg:sticky lg:top-6">
+            <div className="no-print space-y-6">
             {/* Actions Block */}
             <div className="p-4 bg-indigo-950/20 border border-indigo-900/30 rounded-xl flex gap-2 justify-between">
               <button
+                type="button"
                 onClick={handlePrint}
                 className="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/50 rounded-lg font-bold flex items-center justify-center space-x-1.5"
               >
@@ -457,12 +505,18 @@ export default function ItineraryPage() {
                 <span>Export PDF Itinerary</span>
               </button>
               <button
+                type="button"
                 onClick={() => setShowShareModal(true)}
                 className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold flex items-center justify-center space-x-1.5"
               >
                 <Share2 className="w-4 h-4" />
                 <span>Share Proposal link</span>
               </button>
+            </div>
+
+            {/* Theme picker for client presentation */}
+            <div className="p-4 bg-card border border-border rounded-xl">
+              <ProposalThemePicker value={proposalTheme} onChange={handleProposalThemeChange} />
             </div>
 
             {/* Pricing details */}
@@ -512,45 +566,25 @@ export default function ItineraryPage() {
                 </div>
               </div>
             )}
+            </div>
 
-            {/* Itinerary Preview Board */}
-            <div id="itinerary-preview-element" className="p-6 bg-card border border-border rounded-xl space-y-6 bg-gradient-to-b from-card to-secondary/10">
-              <div className="text-center space-y-1.5 border-b border-border pb-4">
-                <span className="text-[9px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-bold uppercase tracking-wider">
-                  Customer Proposal View
+            {/* Client proposal preview — printable */}
+            <div className="space-y-2">
+              <div className="no-print flex items-center justify-between px-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Live Client Preview
                 </span>
-                <h3 className="text-sm font-bold text-foreground uppercase">{activeItinerary.title}</h3>
-                <p className="text-[10px] text-muted-foreground italic px-4">{activeItinerary.description}</p>
+                <span className="text-[9px] text-muted-foreground">This is what your client will see</span>
               </div>
-
-              <div className="space-y-4">
-                {activeItinerary.days.map((day) => (
-                  <div key={day.id} className="space-y-2.5">
-                    <h4 className="font-bold text-xs text-foreground flex items-center space-x-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                      <span>Day {day.dayNumber}: {day.title}</span>
-                    </h4>
-                    <p className="text-[10px] text-muted-foreground leading-relaxed pl-3 border-l border-border/40">
-                      {day.description}
-                    </p>
-
-                    <div className="pl-3 space-y-1.5">
-                      {day.items.map((item) => {
-                        const ItemIcon = iconMap[item.type] || FileText;
-                        return (
-                          <div key={item.id} className="flex justify-between items-center text-[10px] bg-secondary/15 p-1.5 rounded">
-                            <span className="flex items-center space-x-1.5">
-                              <ItemIcon className="w-3.5 h-3.5 text-primary" />
-                              <span className="font-medium">{item.title}</span>
-                            </span>
-                            <span className="text-muted-foreground font-mono">{item.details}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ClientProposalView
+                id="itinerary-preview-element"
+                itinerary={activeItinerary}
+                themeId={proposalTheme}
+                agencyName={currentAgency.name}
+                agencyLogoUrl={currentAgency.logoUrl}
+                clientName={clientName}
+                showPricing
+              />
             </div>
           </div>
         </div>
@@ -773,28 +807,49 @@ export default function ItineraryPage() {
       {/* Share proposal modal */}
       {showShareModal && activeItinerary && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-card border border-border p-6 rounded-xl shadow-2xl space-y-4 animate-scale-in text-xs">
+          <div className="w-full max-w-lg bg-card border border-border p-6 rounded-xl shadow-2xl space-y-4 animate-scale-in text-xs max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-border pb-3">
-              <h2 className="text-sm font-bold">Share Customer Proposal</h2>
-              <button onClick={() => setShowShareModal(false)} className="p-1 rounded hover:bg-secondary">
+              <div>
+                <h2 className="text-sm font-bold">Share Customer Proposal</h2>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  Branded link with your selected presentation theme
+                </p>
+              </div>
+              <button type="button" onClick={() => setShowShareModal(false)} className="p-1 rounded hover:bg-secondary">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-zinc-400 text-[11px] leading-relaxed">
-              Customers can review their hand-crafted itinerary, download vouchers, and make payments in their secure Customer Portal.
+            <ProposalThemePicker value={proposalTheme} onChange={handleProposalThemeChange} />
+
+            <div className="rounded-xl overflow-hidden border border-border">
+              <ClientProposalView
+                itinerary={activeItinerary}
+                themeId={proposalTheme}
+                agencyName={currentAgency.name}
+                agencyLogoUrl={currentAgency.logoUrl}
+                clientName={clientName}
+                showPricing
+                compact
+              />
+            </div>
+
+            <p className="text-muted-foreground text-[11px] leading-relaxed">
+              Your client can review this polished itinerary, upload travel documents, and pay invoices securely.
             </p>
 
             <div className="p-3 bg-secondary rounded-lg border border-border/80 flex items-center justify-between gap-2 font-mono">
-              <span className="truncate text-primary text-[10px]">
-                {typeof window !== 'undefined' ? `${window.location.origin}/portal/customer?itin=${activeItinerary.id}` : `/portal/customer?itin=${activeItinerary.id}`}
-              </span>
+              <span className="truncate text-primary text-[10px]">{shareUrl}</span>
               <button
+                type="button"
                 onClick={() => {
-                  navigator.clipboard.writeText(
-                    typeof window !== 'undefined' ? `${window.location.origin}/portal/customer?itin=${activeItinerary.id}` : `/portal/customer?itin=${activeItinerary.id}`
+                  const url = buildProposalShareUrl(
+                    window.location.origin,
+                    activeItinerary.id,
+                    proposalTheme
                   );
-                  alert('Share Link copied to Clipboard!');
+                  navigator.clipboard.writeText(url);
+                  alert('Share link copied to clipboard!');
                 }}
                 className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded text-[10px] shrink-0"
               >
@@ -804,6 +859,7 @@ export default function ItineraryPage() {
 
             <div className="flex justify-end pt-2">
               <button
+                type="button"
                 onClick={() => setShowShareModal(false)}
                 className="px-4 py-2 rounded bg-zinc-800 hover:bg-zinc-700 font-semibold"
               >

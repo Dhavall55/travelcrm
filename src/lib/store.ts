@@ -32,6 +32,7 @@ export interface Lead {
   value: number;
   source?: string;
   assignedToId?: string;
+  customerId?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -106,6 +107,7 @@ export interface Itinerary {
   taxRate: number; // percentage
   isTemplate: boolean;
   days: ItineraryDay[];
+  proposalTheme?: 'luxury' | 'classic' | 'emerald' | 'sunset';
 }
 
 export interface VendorRate {
@@ -269,7 +271,7 @@ const defaultAgencies: Agency[] = [
     id: 'agency-1',
     name: 'Bharat Travel Solutions',
     subdomain: 'bharattravel',
-    logoUrl: 'https://images.unsplash.com/photo-1582719478250-7c987be31ed2?w=128&auto=format&fit=crop&q=60',
+    logoUrl: '/agency-logo.svg',
     primaryColor: '#0d6efd', // Bootstrap primary blue
     secondaryColor: '#6c757d', // Bootstrap secondary gray
     subscriptionPlan: 'GROWTH',
@@ -330,6 +332,7 @@ const defaultLeads: Lead[] = [
     value: 285000.00,
     source: 'Website Quote',
     assignedToId: 'user-sales',
+    customerId: 'cust-1',
     createdAt: '2026-05-10T14:32:00Z',
     updatedAt: '2026-05-22T12:00:00Z',
   },
@@ -453,6 +456,7 @@ const defaultItineraries: Itinerary[] = [
     markupMargin: 15.00,
     taxRate: 10.00,
     isTemplate: false,
+    proposalTheme: 'luxury',
     days: [
       {
         id: 'day-1',
@@ -756,6 +760,7 @@ export const useStore = create<CRMStore>((set, get) => ({
       id: `itin-${Date.now()}`,
       agencyId: get().currentAgency.id,
       days: itinData.days || [],
+      proposalTheme: itinData.proposalTheme || 'luxury',
     };
 
     set((state) => ({
@@ -794,7 +799,8 @@ export const useStore = create<CRMStore>((set, get) => ({
     set((state) => ({
       itineraries: state.itineraries.map((it) => {
         if (it.id === itineraryId) {
-          const nextDayNum = it.days.length + 1;
+          const existingDays = it.days ?? [];
+          const nextDayNum = existingDays.length + 1;
           const newDay: ItineraryDay = {
             id: `day-${Date.now()}`,
             dayNumber: nextDayNum,
@@ -802,11 +808,12 @@ export const useStore = create<CRMStore>((set, get) => ({
             description,
             items: [],
           };
-          return { ...it, days: [...it.days, newDay] };
+          return { ...it, days: [...existingDays, newDay] };
         }
         return it;
       }),
     }));
+    get().logAction('UPDATE', 'Itinerary', `Added day "${title}" to itinerary ID: ${itineraryId}`);
   },
 
   updateItineraryDay: (itineraryId, dayId, updates) => {
@@ -815,7 +822,7 @@ export const useStore = create<CRMStore>((set, get) => ({
         if (it.id === itineraryId) {
           return {
             ...it,
-            days: it.days.map((d) => (d.id === dayId ? { ...d, ...updates } : d)),
+            days: (it.days ?? []).map((d) => (d.id === dayId ? { ...d, ...updates } : d)),
           };
         }
         return it;

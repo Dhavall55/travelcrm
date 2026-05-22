@@ -121,6 +121,26 @@ body {
   box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.5);
 }
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #itinerary-preview-element,
+  #itinerary-preview-element * {
+    visibility: visible;
+  }
+
+  #itinerary-preview-element {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
 /* Status dots */
 .status-dot-active {
   animation: pulse-dot 2s infinite;

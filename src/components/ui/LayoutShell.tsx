@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useStore } from '@/lib/store';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useStore, AuditLog } from '@/lib/store';
 import { 
   LayoutDashboard, 
   Users, 
@@ -44,24 +44,130 @@ const navigationItems: SidebarItem[] = [
   { name: 'Access Control & Staff', href: '/dashboard/employees', icon: ShieldAlert, roles: ['Agency Admin'] },
 ];
 
+function AgencyLogo({ name, logoUrl, className }: { name: string; logoUrl?: string; className: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!logoUrl || failed) {
+    return (
+      <div className={`${className} bg-primary flex items-center justify-center text-primary-foreground font-bold`}>
+        {name.charAt(0)}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={logoUrl}
+      alt={name}
+      className={className}
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+function getActionBadgeClass(action: string) {
+  switch (action) {
+    case 'CREATE':
+      return 'bg-emerald-500/10 text-emerald-500';
+    case 'UPDATE':
+      return 'bg-indigo-500/10 text-indigo-500';
+    case 'DELETE':
+      return 'bg-red-500/10 text-red-500';
+    case 'LOGIN':
+      return 'bg-sky-500/10 text-sky-500';
+    default:
+      return 'bg-secondary text-muted-foreground';
+  }
+}
+
+function formatLogTime(iso: string) {
+  const date = new Date(iso);
+  const diffMs = Date.now() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+
+  return date.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function AuditLogEntry({ log }: { log: AuditLog }) {
+  return (
+    <div className="p-2 rounded-lg bg-secondary/50 border border-border/30">
+      <div className="flex justify-between items-start gap-2">
+        <div className="min-w-0 space-y-1">
+          <div className="flex items-center flex-wrap gap-1.5">
+            <span className="font-semibold text-[10px] text-foreground">{log.userName}</span>
+            <span className={`text-[8px] px-1 py-0.5 rounded font-bold ${getActionBadgeClass(log.action)}`}>
+              {log.action}
+            </span>
+            <span className="text-[8px] px-1 py-0.5 rounded bg-secondary text-muted-foreground font-medium">
+              {log.entityType}
+            </span>
+          </div>
+          <p className="text-[11px] text-foreground leading-snug">{log.details}</p>
+        </div>
+        <span className="text-[9px] text-muted-foreground shrink-0" title={new Date(log.createdAt).toLocaleString()}>
+          {formatLogTime(log.createdAt)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  
-  const { 
-    theme, 
-    setTheme, 
-    currentAgency, 
-    agencies, 
-    setCurrentAgency, 
-    currentUser, 
-    users, 
-    setCurrentUser,
-    auditLogs
-  } = useStore();
+  const [lastSeenAt, setLastSeenAt] = useState<string | null>(null);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+
+  const theme = useStore((state) => state.theme);
+  const setTheme = useStore((state) => state.setTheme);
+  const currentAgency = useStore((state) => state.currentAgency);
+  const agencies = useStore((state) => state.agencies);
+  const setCurrentAgency = useStore((state) => state.setCurrentAgency);
+  const currentUser = useStore((state) => state.currentUser);
+  const users = useStore((state) => state.users);
+  const setCurrentUser = useStore((state) => state.setCurrentUser);
+  const auditLogs = useStore((state) => state.auditLogs);
+
+  const agencyAuditLogs = useMemo(
+    () =>
+      auditLogs
+        .filter((log) => log.agencyId === currentAgency.id)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [auditLogs, currentAgency.id]
+  );
+
+  const unreadCount = useMemo(() => {
+    if (!lastSeenAt) return 0;
+    return agencyAuditLogs.filter((log) => log.createdAt > lastSeenAt).length;
+  }, [agencyAuditLogs, lastSeenAt]);
+
+  const markLogsSeen = () => setLastSeenAt(new Date().toISOString());
+
+  const handleToggleNotifications = () => {
+    if (!showNotifications) {
+      markLogsSeen();
+    }
+    setShowNotifications((open) => !open);
+  };
+
+  const handleDismissNotifications = () => {
+    markLogsSeen();
+    setShowNotifications(false);
+  };
 
   // Dark mode effect
   useEffect(() => {
@@ -72,6 +178,23 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       root.classList.remove('dark');
     }
   }, [theme]);
+
+  useEffect(() => {
+    markLogsSeen();
+  }, []);
+
+  useEffect(() => {
+    if (!showNotifications) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
+        handleDismissNotifications();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showNotifications]);
 
   // If path is auth or portal, bypass layout shell
   const isAuthPage = pathname.startsWith('/auth') || pathname.startsWith('/portal');
@@ -97,17 +220,11 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
         <div className="space-y-6">
           {/* Logo / Branding */}
           <div className="flex items-center space-x-3 px-2 py-1">
-            {currentAgency.logoUrl ? (
-              <img 
-                src={currentAgency.logoUrl} 
-                alt={currentAgency.name} 
-                className="w-10 h-10 rounded-lg object-cover ring-2 ring-primary/20"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
-                {currentAgency.name.charAt(0)}
-              </div>
-            )}
+            <AgencyLogo
+              name={currentAgency.name}
+              logoUrl={currentAgency.logoUrl}
+              className="w-10 h-10 rounded-lg object-cover ring-2 ring-primary/20"
+            />
             <div className="flex flex-col">
               <span className="font-semibold tracking-tight text-sm truncate w-40">{currentAgency.name}</span>
               <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
@@ -196,13 +313,11 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       {/* Mobile Header */}
       <header className="md:hidden flex items-center justify-between border-b border-border bg-card p-4 z-40 shrink-0">
         <div className="flex items-center space-x-2">
-          {currentAgency.logoUrl ? (
-            <img src={currentAgency.logoUrl} alt={currentAgency.name} className="w-8 h-8 rounded object-cover" />
-          ) : (
-            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
-              {currentAgency.name.charAt(0)}
-            </div>
-          )}
+          <AgencyLogo
+            name={currentAgency.name}
+            logoUrl={currentAgency.logoUrl}
+            className="w-8 h-8 rounded object-cover"
+          />
           <span className="font-semibold text-xs truncate max-w-[120px]">{currentAgency.name}</span>
         </div>
 
@@ -302,55 +417,61 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
             </button>
 
             {/* Notifications panel */}
-            <div className="relative">
+            <div className="relative" ref={notificationsRef}>
               <button
-                onClick={() => setShowNotifications(!showNotifications)}
+                type="button"
+                onClick={handleToggleNotifications}
                 className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors relative"
+                title="Security audit logs"
               >
                 <Bell className="w-4 h-4" />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-destructive"></span>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-[9px] font-bold text-white flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </button>
 
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-xl z-50 p-2 text-xs">
                   <div className="flex justify-between items-center border-b border-border pb-2 mb-2 px-1">
-                    <span className="font-semibold">Recent Security Audit Logs</span>
-                    <button 
-                      onClick={() => setShowNotifications(false)}
-                      className="text-[10px] text-primary hover:underline"
+                    <div>
+                      <span className="font-semibold block">Recent Security Audit Logs</span>
+                      <span className="text-[9px] text-muted-foreground">
+                        {agencyAuditLogs.length} event{agencyAuditLogs.length === 1 ? '' : 's'} for {currentAgency.name}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleDismissNotifications}
+                      className="text-[10px] text-primary hover:underline shrink-0"
                     >
                       Dismiss
                     </button>
                   </div>
                   <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {auditLogs.slice(0, 4).map((log) => (
-                      <div key={log.id} className="p-1.5 rounded bg-secondary/50 border border-border/30">
-                        <div className="flex justify-between text-[10px] text-muted-foreground">
-                          <span className="font-semibold">{log.userName}</span>
-                          <span>{new Date(log.createdAt).toLocaleTimeString()}</span>
-                        </div>
-                        <p className="text-[11px] mt-0.5 text-foreground">{log.details}</p>
+                    {agencyAuditLogs.length > 0 ? (
+                      agencyAuditLogs.slice(0, 8).map((log) => <AuditLogEntry key={log.id} log={log} />)
+                    ) : (
+                      <div className="py-6 text-center text-muted-foreground text-[11px]">
+                        No audit activity yet. Actions across the CRM will appear here.
                       </div>
-                    ))}
+                    )}
                   </div>
+                  {currentUser?.role === 'Agency Admin' && agencyAuditLogs.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleDismissNotifications();
+                        router.push('/dashboard/employees');
+                      }}
+                      className="w-full mt-2 pt-2 border-t border-border text-[10px] text-primary hover:underline"
+                    >
+                      View full audit trail
+                    </button>
+                  )}
                 </div>
               )}
-            </div>
-
-            {/* Portal Switch Links */}
-            <div className="flex items-center space-x-2 border-l border-border pl-4">
-              <Link 
-                href="/portal/customer" 
-                className="text-[11px] font-semibold text-primary hover:underline px-2.5 py-1 rounded bg-primary/10"
-              >
-                Customer Portal
-              </Link>
-              <Link 
-                href="/portal/vendor" 
-                className="text-[11px] font-semibold text-teal-500 hover:underline px-2.5 py-1 rounded bg-teal-500/10"
-              >
-                Vendor Portal
-              </Link>
             </div>
 
             {/* User Dropdown */}

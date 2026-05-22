@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, react/no-unescaped-entities */
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useStore, Lead } from '@/lib/store';
 import { 
   Plus, 
@@ -11,7 +11,9 @@ import {
   Activity,
   Trash2,
   Clock,
-  Filter
+  Filter,
+  UserPlus,
+  Users
 } from 'lucide-react';
 
 const stages = [
@@ -30,7 +32,8 @@ export default function CRMPage() {
     leadActivities, 
     leadFollowups, 
     currentAgency, 
-    users, 
+    users,
+    customers,
     addLead, 
     updateLeadStatus, 
     updateLead,
@@ -58,6 +61,103 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
   const [newValue, setNewValue] = useState('');
   const [newSource, setNewSource] = useState('Website');
   const [newAssigned, setNewAssigned] = useState('');
+  const [leadEntryMode, setLeadEntryMode] = useState<'new' | 'existing'>('new');
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
+  const [customerSearch, setCustomerSearch] = useState('');
+
+  const agencyCustomers = useMemo(
+    () => customers.filter((c) => c.agencyId === currentAgency.id),
+    [customers, currentAgency.id]
+  );
+
+  const filteredCustomers = useMemo(() => {
+    const q = customerSearch.trim().toLowerCase();
+    if (!q) return agencyCustomers;
+    return agencyCustomers.filter((c) =>
+      `${c.firstName} ${c.lastName} ${c.email} ${c.phone ?? ''}`.toLowerCase().includes(q)
+    );
+  }, [agencyCustomers, customerSearch]);
+
+  const selectedCustomer = agencyCustomers.find((c) => c.id === selectedCustomerId);
+
+  const resolvePreviousAgentId = (customerId: string) => {
+    const customer = agencyCustomers.find((c) => c.id === customerId);
+    if (!customer) return '';
+
+    const previousLead = leads
+      .filter((l) => l.agencyId === currentAgency.id && l.assignedToId)
+      .filter(
+        (l) =>
+          l.customerId === customerId ||
+          (customer.email && l.email?.toLowerCase() === customer.email.toLowerCase()) ||
+          (l.firstName === customer.firstName && l.lastName === customer.lastName)
+      )
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())[0];
+
+    return previousLead?.assignedToId ?? '';
+  };
+
+  const resetLeadForm = () => {
+    setNewTitle('');
+    setNewFirstName('');
+    setNewLastName('');
+    setNewEmail('');
+    setNewPhone('');
+    setNewValue('');
+    setNewSource('Website');
+    setNewAssigned('');
+    setLeadEntryMode('new');
+    setSelectedCustomerId('');
+    setCustomerSearch('');
+  };
+
+  const openAddLeadModal = () => {
+    resetLeadForm();
+    setShowAddModal(true);
+  };
+
+  const applyCustomerToForm = (customerId: string) => {
+    setSelectedCustomerId(customerId);
+    if (!customerId) {
+      setNewFirstName('');
+      setNewLastName('');
+      setNewEmail('');
+      setNewPhone('');
+      setNewAssigned('');
+      return;
+    }
+    const customer = agencyCustomers.find((c) => c.id === customerId);
+    if (!customer) return;
+    setNewFirstName(customer.firstName);
+    setNewLastName(customer.lastName);
+    setNewEmail(customer.email);
+    setNewPhone(customer.phone ?? '');
+    setNewAssigned(resolvePreviousAgentId(customerId));
+  };
+
+  const handleEntryModeChange = (mode: 'new' | 'existing') => {
+    setLeadEntryMode(mode);
+    setSelectedCustomerId('');
+    setCustomerSearch('');
+    setNewAssigned('');
+    if (mode === 'new') {
+      setNewFirstName('');
+      setNewLastName('');
+      setNewEmail('');
+      setNewPhone('');
+    }
+  };
+
+  const tryMatchCustomerByEmail = (email: string) => {
+    if (leadEntryMode !== 'new' || !email.trim()) return;
+    const match = agencyCustomers.find(
+      (c) => c.email.toLowerCase() === email.trim().toLowerCase()
+    );
+    if (match) {
+      setLeadEntryMode('existing');
+      applyCustomerToForm(match.id);
+    }
+  };
 
   // Lead Details Notes/Reminders form state
   const [noteContent, setNoteContent] = useState('');
@@ -86,9 +186,12 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
 
   // Get staff for dropdown list
   const staff = users.filter(u => u.agencyId === currentAgency.id && u.role !== 'Customer' && u.role !== 'Vendor');
+  const previousAgentName = staff.find((u) => u.id === newAssigned)?.name;
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (leadEntryMode === 'existing' && !selectedCustomerId) return;
+
     addLead({
       title: newTitle,
       firstName: newFirstName,
@@ -99,17 +202,10 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
       value: Number(newValue) || 0,
       source: newSource,
       assignedToId: newAssigned || undefined,
+      customerId: selectedCustomerId || undefined,
     });
-    
-    // Reset Form
-    setNewTitle('');
-    setNewFirstName('');
-    setNewLastName('');
-    setNewEmail('');
-    setNewPhone('');
-    setNewValue('');
-    setNewSource('Website');
-    setNewAssigned('');
+
+    resetLeadForm();
     setShowAddModal(false);
   };
 
@@ -141,7 +237,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
           </p>
         </div>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={openAddLeadModal}
           className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-md shadow-indigo-600/10 self-stretch sm:self-auto justify-center"
         >
           <Plus className="w-4 h-4" />
@@ -272,12 +368,81 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
           <div className="w-full max-w-lg bg-card border border-border p-6 rounded-xl shadow-2xl space-y-4 animate-scale-in text-xs">
             <div className="flex justify-between items-center border-b border-border pb-3">
               <h2 className="text-sm font-bold">Record Customer Lead</h2>
-              <button onClick={() => setShowAddModal(false)} className="p-1 rounded hover:bg-secondary">
+              <button type="button" onClick={() => { setShowAddModal(false); resetLeadForm(); }} className="p-1 rounded hover:bg-secondary">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleAddSubmit} className="space-y-4">
+              {/* New vs existing customer */}
+              <div className="space-y-3">
+                <label className="block font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
+                  Contact Type
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleEntryModeChange('new')}
+                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border font-semibold transition-colors ${
+                      leadEntryMode === 'new'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-secondary/30 text-muted-foreground hover:bg-secondary'
+                    }`}
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    New Contact
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEntryModeChange('existing')}
+                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border font-semibold transition-colors ${
+                      leadEntryMode === 'existing'
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border bg-secondary/30 text-muted-foreground hover:bg-secondary'
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    Existing Customer
+                  </button>
+                </div>
+
+                {leadEntryMode === 'existing' && (
+                  <div className="space-y-2 p-3 rounded-lg bg-secondary/20 border border-border/60">
+                    <label className="block font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
+                      Select from Customer Directory
+                    </label>
+                    <input
+                      type="text"
+                      value={customerSearch}
+                      onChange={(e) => setCustomerSearch(e.target.value)}
+                      placeholder="Search by name, email, or phone..."
+                      className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
+                    />
+                    <select
+                      required
+                      value={selectedCustomerId}
+                      onChange={(e) => applyCustomerToForm(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
+                    >
+                      <option value="">Choose a customer...</option>
+                      {filteredCustomers.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.firstName} {c.lastName} — {c.email}
+                        </option>
+                      ))}
+                    </select>
+                    {selectedCustomer && (
+                      <p className="text-[10px] text-emerald-500 font-medium">
+                        Profile loaded — only enter the new trip details below.
+                      </p>
+                    )}
+                    {filteredCustomers.length === 0 && (
+                      <p className="text-[10px] text-muted-foreground">No matching customers found.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block font-bold text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
                   Lead Goal / Destination Title
@@ -300,10 +465,15 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                   <input
                     type="text"
                     required
+                    readOnly={leadEntryMode === 'existing' && !!selectedCustomerId}
                     value={newFirstName}
                     onChange={(e) => setNewFirstName(e.target.value)}
                     placeholder="Aarav"
-                    className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
+                    className={`w-full px-3 py-2 rounded-lg border border-border focus:border-primary focus:outline-none ${
+                      leadEntryMode === 'existing' && selectedCustomerId
+                        ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
+                        : 'bg-secondary/50'
+                    }`}
                   />
                 </div>
                 <div>
@@ -313,10 +483,15 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                   <input
                     type="text"
                     required
+                    readOnly={leadEntryMode === 'existing' && !!selectedCustomerId}
                     value={newLastName}
                     onChange={(e) => setNewLastName(e.target.value)}
                     placeholder="Mehta"
-                    className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
+                    className={`w-full px-3 py-2 rounded-lg border border-border focus:border-primary focus:outline-none ${
+                      leadEntryMode === 'existing' && selectedCustomerId
+                        ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
+                        : 'bg-secondary/50'
+                    }`}
                   />
                 </div>
               </div>
@@ -328,10 +503,16 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                   </label>
                   <input
                     type="email"
+                    readOnly={leadEntryMode === 'existing' && !!selectedCustomerId}
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
+                    onBlur={(e) => tryMatchCustomerByEmail(e.target.value)}
                     placeholder="client@gmail.com"
-                    className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
+                    className={`w-full px-3 py-2 rounded-lg border border-border focus:border-primary focus:outline-none ${
+                      leadEntryMode === 'existing' && selectedCustomerId
+                        ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
+                        : 'bg-secondary/50'
+                    }`}
                   />
                 </div>
                 <div>
@@ -340,10 +521,15 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                   </label>
                   <input
                     type="text"
+                    readOnly={leadEntryMode === 'existing' && !!selectedCustomerId}
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
+                    className={`w-full px-3 py-2 rounded-lg border border-border focus:border-primary focus:outline-none ${
+                      leadEntryMode === 'existing' && selectedCustomerId
+                        ? 'bg-secondary/30 text-muted-foreground cursor-not-allowed'
+                        : 'bg-secondary/50'
+                    }`}
                   />
                 </div>
               </div>
@@ -391,13 +577,18 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                       <option key={u.id} value={u.id}>{u.name}</option>
                     ))}
                   </select>
+                  {leadEntryMode === 'existing' && selectedCustomerId && newAssigned && previousAgentName && (
+                    <p className="text-[9px] text-emerald-500 mt-1 font-medium">
+                      Auto-assigned to {previousAgentName} from previous lead
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="pt-2 flex justify-end space-x-2">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => { setShowAddModal(false); resetLeadForm(); }}
                   className="px-4 py-2 rounded-lg hover:bg-secondary border border-border font-medium"
                 >
                   Cancel

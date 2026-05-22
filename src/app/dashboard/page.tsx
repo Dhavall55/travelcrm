@@ -61,6 +61,9 @@ export default function DashboardPage() {
   const agencyInvoices = invoices.filter(i => i.agencyId === currentAgency.id);
   const agencyPayments = payments.filter(p => p.agencyId === currentAgency.id);
   const agencyExpenses = expenses.filter(e => e.agencyId === currentAgency.id);
+  const agencyAuditLogs = auditLogs
+    .filter((log) => log.agencyId === currentAgency.id)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   // Computations
   const totalLeadsCount = agencyLeads.length;
@@ -349,8 +352,8 @@ export default function DashboardPage() {
             </span>
           </div>
           <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1">
-            {auditLogs.length > 0 ? (
-              auditLogs.slice(0, 5).map((log) => (
+            {agencyAuditLogs.length > 0 ? (
+              agencyAuditLogs.slice(0, 5).map((log) => (
                 <div key={log.id} className="flex justify-between items-start p-2 rounded-lg bg-secondary/30 border border-border/40 text-xs">
                   <div className="space-y-0.5">
                     <div className="flex items-center space-x-1.5">
