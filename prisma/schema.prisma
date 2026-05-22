@@ -122,7 +122,7 @@ model Lead {
   id                String             @id @default(uuid())
   agencyId          String             @map("agency_id")
   agency            Agency             @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-  title             String             // e.g., "Honeymoon Tour to Bali"
+  title             String             // e.g., "Kashmir Honeymoon Escape"
   firstName         String             @map("first_name")
   lastName          String             @map("last_name")
   email             String?

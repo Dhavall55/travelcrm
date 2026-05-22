@@ -277,42 +277,42 @@ const defaultAgencies: Agency[] = [
 ];
 
 const defaultUsers: User[] = [
-  { id: 'user-admin', email: 'admin@apex.com', name: 'Alara Vane', agencyId: 'agency-1', role: 'Agency Admin' },
-  { id: 'user-sales', email: 'jane@apex.com', name: 'Jane Miller', agencyId: 'agency-1', role: 'Sales Agent' },
-  { id: 'user-ops', email: 'ops@apex.com', name: 'John Smith', agencyId: 'agency-1', role: 'Operations' },
-  { id: 'user-finance', email: 'finance@apex.com', name: 'Sarah Jenkins', agencyId: 'agency-1', role: 'Finance' },
-  { id: 'user-vendor', email: 'hotel@hyatt.com', name: 'Mark Lin', agencyId: 'agency-1', role: 'Vendor' },
-  { id: 'user-customer', email: 'customer@client.com', name: 'Robert Carter', agencyId: 'agency-1', role: 'Customer' },
+  { id: 'user-admin', email: 'admin@bharattravel.in', name: 'Dhruv Shah', agencyId: 'agency-1', role: 'Agency Admin' },
+  { id: 'user-sales', email: 'sales@bharattravel.in', name: 'Neha Kapoor', agencyId: 'agency-1', role: 'Sales Agent' },
+  { id: 'user-ops', email: 'ops@bharattravel.in', name: 'Arjun Nair', agencyId: 'agency-1', role: 'Operations' },
+  { id: 'user-finance', email: 'finance@bharattravel.in', name: 'Kavya Rao', agencyId: 'agency-1', role: 'Finance' },
+  { id: 'user-vendor', email: 'reservations@dalviewretreat.in', name: 'Faisal Mir', agencyId: 'agency-1', role: 'Vendor' },
+  { id: 'user-customer', email: 'aarav.mehta@gmail.com', name: 'Aarav Mehta', agencyId: 'agency-1', role: 'Customer' },
 ];
 
 const defaultCustomers: Customer[] = [
   {
     id: 'cust-1',
     agencyId: 'agency-1',
-    firstName: 'Robert',
-    lastName: 'Carter',
-    email: 'customer@client.com',
-    phone: '+1 415-555-2671',
-    passportNumber: 'US87654321',
+    firstName: 'Aarav',
+    lastName: 'Mehta',
+    email: 'aarav.mehta@gmail.com',
+    phone: '+91 98765 43210',
+    passportNumber: 'N8765432',
     passportExpiry: '2031-10-15',
-    travelHistory: ['Paris, France (2024)', 'Tokyo, Japan (2025)'],
+    travelHistory: ['Jaipur, Rajasthan (2024)', 'Kochi, Kerala (2025)'],
     documents: [
       { name: 'passport_scan.pdf', url: '#', category: 'Passport', size: '1.2 MB' },
-      { name: 'france_visa_approved.pdf', url: '#', category: 'Visa', size: '840 KB' }
+      { name: 'kashmir_permit.pdf', url: '#', category: 'Permit', size: '840 KB' }
     ]
   },
   {
     id: 'cust-2',
     agencyId: 'agency-1',
-    firstName: 'Elena',
-    lastName: 'Rostova',
-    email: 'elena@traveler.org',
-    phone: '+44 20-7946-0192',
-    passportNumber: 'RU12345678',
+    firstName: 'Priya',
+    lastName: 'Iyer',
+    email: 'priya.iyer@gmail.com',
+    phone: '+91 99887 77665',
+    passportNumber: 'P1234567',
     passportExpiry: '2029-04-12',
-    travelHistory: ['Bali, Indonesia (2023)', 'Iceland Tour (2024)'],
+    travelHistory: ['Hampi, Karnataka (2023)', 'Darjeeling, West Bengal (2024)'],
     documents: [
-      { name: 'passport_elena.pdf', url: '#', category: 'Passport', size: '2.1 MB' }
+      { name: 'passport_priya.pdf', url: '#', category: 'Passport', size: '2.1 MB' }
     ]
   }
 ];
@@ -321,13 +321,13 @@ const defaultLeads: Lead[] = [
   {
     id: 'lead-1',
     agencyId: 'agency-1',
-    title: 'Bali Luxury Getaway 10D',
-    firstName: 'Robert',
-    lastName: 'Carter',
-    email: 'customer@client.com',
-    phone: '+1 415-555-2671',
+    title: 'Kashmir Honeymoon Escape 6D',
+    firstName: 'Aarav',
+    lastName: 'Mehta',
+    email: 'aarav.mehta@gmail.com',
+    phone: '+91 98765 43210',
     status: 'PROPOSAL_SENT',
-    value: 4850.00,
+    value: 285000.00,
     source: 'Website Quote',
     assignedToId: 'user-sales',
     createdAt: '2026-05-10T14:32:00Z',
@@ -336,13 +336,13 @@ const defaultLeads: Lead[] = [
   {
     id: 'lead-2',
     agencyId: 'agency-1',
-    title: 'Kenya Wildlife Safari 7D',
-    firstName: 'Sarah',
-    lastName: 'Conner',
-    email: 'sconner@skynet.com',
-    phone: '+1 213-555-9012',
+    title: 'Rajasthan Heritage Circuit 8D',
+    firstName: 'Rohan',
+    lastName: 'Singh',
+    email: 'rohan.singh@gmail.com',
+    phone: '+91 98110 22334',
     status: 'NEW',
-    value: 6200.00,
+    value: 198000.00,
     source: 'Referral',
     assignedToId: 'user-sales',
     createdAt: '2026-05-21T09:15:00Z',
@@ -351,13 +351,13 @@ const defaultLeads: Lead[] = [
   {
     id: 'lead-3',
     agencyId: 'agency-1',
-    title: 'Swiss Alps Hiking Expedition',
-    firstName: 'Marcus',
-    lastName: 'Aurelius',
-    email: 'philosopher@rome.edu',
-    phone: '+39 06-8765-4321',
+    title: 'Kerala Backwater Retreat',
+    firstName: 'Ananya',
+    lastName: 'Menon',
+    email: 'ananya.menon@gmail.com',
+    phone: '+91 94470 55667',
     status: 'NEGOTIATION',
-    value: 8400.00,
+    value: 164000.00,
     source: 'Instagram Ads',
     assignedToId: 'user-sales',
     createdAt: '2026-05-15T11:00:00Z',
@@ -366,13 +366,13 @@ const defaultLeads: Lead[] = [
   {
     id: 'lead-4',
     agencyId: 'agency-1',
-    title: 'Tokyo Culinary & Culture',
-    firstName: 'Emily',
-    lastName: 'Watson',
-    email: 'emily@watson.co.uk',
-    phone: '+44 7700-900077',
+    title: 'Varanasi Spiritual Trail',
+    firstName: 'Ishaan',
+    lastName: 'Banerjee',
+    email: 'ishaan.banerjee@gmail.com',
+    phone: '+91 98300 77889',
     status: 'CONFIRMED',
-    value: 3950.00,
+    value: 112000.00,
     source: 'Google Search',
     assignedToId: 'user-sales',
     createdAt: '2026-05-02T10:45:00Z',
@@ -381,60 +381,60 @@ const defaultLeads: Lead[] = [
 ];
 
 const defaultLeadActivities: LeadActivity[] = [
-  { id: 'act-1', leadId: 'lead-1', type: 'NOTE', description: 'Interested in 5-star villas near Seminyak, private pool.', createdBy: 'Jane Miller', createdAt: '2026-05-10T14:35:00Z' },
-  { id: 'act-2', leadId: 'lead-1', type: 'EMAIL', description: 'Sent initial custom itinerary draft with flight quotes.', createdBy: 'Jane Miller', createdAt: '2026-05-12T16:00:00Z' },
-  { id: 'act-3', leadId: 'lead-1', type: 'PHONE', description: 'Discussed markup options. Client requested adding a private chef activity.', createdBy: 'Jane Miller', createdAt: '2026-05-22T11:00:00Z' }
+  { id: 'act-1', leadId: 'lead-1', type: 'NOTE', description: 'Interested in a Dal Lake houseboat night and a private Gulmarg snow day.', createdBy: 'Neha Kapoor', createdAt: '2026-05-10T14:35:00Z' },
+  { id: 'act-2', leadId: 'lead-1', type: 'EMAIL', description: 'Sent the first Kashmir itinerary draft with flight quotes.', createdBy: 'Neha Kapoor', createdAt: '2026-05-12T16:00:00Z' },
+  { id: 'act-3', leadId: 'lead-1', type: 'PHONE', description: 'Discussed markup options. Client requested a private shikara dinner.', createdBy: 'Neha Kapoor', createdAt: '2026-05-22T11:00:00Z' }
 ];
 
 const defaultLeadNotes: LeadNote[] = [
-  { id: 'note-1', leadId: 'lead-1', content: 'Client prefers morning departures. Budget is slightly flexible for premium lodging.', createdBy: 'Jane Miller', createdAt: '2026-05-10T14:40:00Z' }
+  { id: 'note-1', leadId: 'lead-1', content: 'Client prefers morning departures. Budget is flexible for a premium Srinagar stay.', createdBy: 'Neha Kapoor', createdAt: '2026-05-10T14:40:00Z' }
 ];
 
 const defaultLeadFollowups: LeadFollowup[] = [
-  { id: 'fup-1', leadId: 'lead-1', scheduledAt: '2026-05-25T10:00:00Z', status: 'PENDING', notes: 'Call client to review final pricing and confirm deposits.', createdBy: 'Jane Miller' }
+  { id: 'fup-1', leadId: 'lead-1', scheduledAt: '2026-05-25T10:00:00Z', status: 'PENDING', notes: 'Call client to review final pricing and confirm the advance payment.', createdBy: 'Neha Kapoor' }
 ];
 
 const defaultVendors: Vendor[] = [
   {
     id: 'vend-1',
     agencyId: 'agency-1',
-    name: 'Grand Hyatt Bali Resort',
+    name: 'Dal View Retreat Srinagar',
     type: 'SERVICE',
-    email: 'reservations@grandhyattbali.com',
-    phone: '+62 361-771188',
-    address: 'Kawasan Wisata Nusa Dua BTDC, Bali, Indonesia',
-    ledgerBalance: 2400.00,
+    email: 'reservations@dalviewretreat.in',
+    phone: '+91 194 245 7788',
+    address: 'Boulevard Road, Srinagar, Jammu and Kashmir',
+    ledgerBalance: 96000.00,
     rates: [
-      { name: 'Grand Deluxe Room', type: 'HOTEL', price: 210 },
-      { name: 'Ocean View Suite', type: 'HOTEL', price: 380 }
+      { name: 'Lake View Deluxe Room', type: 'HOTEL', price: 14000 },
+      { name: 'Premium Houseboat Suite', type: 'HOTEL', price: 22000 }
     ]
   },
   {
     id: 'vend-2',
     agencyId: 'agency-1',
-    name: 'Garuda Airways',
+    name: 'IndiGo Agency Desk',
     type: 'SERVICE',
-    email: 'agency.desk@garuda.com',
-    phone: '+62 21-23507171',
-    address: 'Jakarta HQ, Indonesia',
-    ledgerBalance: 1200.00,
+    email: 'agencydesk@goindigo.in',
+    phone: '+91 124 617 3838',
+    address: 'Gurugram, Haryana',
+    ledgerBalance: 54000.00,
     rates: [
-      { name: 'LAX-DPS Business Return', type: 'FLIGHT', price: 1850 },
-      { name: 'LAX-DPS Economy Return', type: 'FLIGHT', price: 680 }
+      { name: 'DEL-SXR Flexi Return', type: 'FLIGHT', price: 28000 },
+      { name: 'BOM-SXR Economy Return', type: 'FLIGHT', price: 18500 }
     ]
   },
   {
     id: 'vend-3',
     agencyId: 'agency-1',
-    name: 'Bali Private Chauffeurs Co',
+    name: 'Kashmir Valley Cabs',
     type: 'SERVICE',
-    email: 'bookings@baliprivatecar.com',
-    phone: '+62 812-3456-7890',
-    address: 'Denpasar City, Bali',
-    ledgerBalance: 320.00,
+    email: 'bookings@kashmirvalleycabs.in',
+    phone: '+91 99065 44321',
+    address: 'Rajbagh, Srinagar, Jammu and Kashmir',
+    ledgerBalance: 18000.00,
     rates: [
-      { name: 'Full-Day Toyota Alphard (10h)', type: 'VEHICLE', price: 120 },
-      { name: 'Airport Transfer Mini SUV', type: 'VEHICLE', price: 35 }
+      { name: 'Full-Day Innova Crysta (10h)', type: 'VEHICLE', price: 6500 },
+      { name: 'Srinagar Airport SUV Transfer', type: 'VEHICLE', price: 2200 }
     ]
   }
 ];
@@ -443,13 +443,13 @@ const defaultItineraries: Itinerary[] = [
   {
     id: 'itin-1',
     agencyId: 'agency-1',
-    title: 'Signature Bali Luxury Discovery',
-    description: 'A hand-crafted luxury excursion covering temple visits, private beach clubs, and cultural exploration in Ubud and Nusa Dua.',
+    title: 'Signature Kashmir Luxury Discovery',
+    description: 'A hand-crafted Kashmir escape covering Dal Lake, Gulmarg views, Srinagar gardens, and warm local hospitality.',
     startDate: '2026-07-15',
     endDate: '2026-07-22',
     customerId: 'cust-1',
     status: 'SENT',
-    totalPrice: 4850.00,
+    totalPrice: 285000.00,
     markupMargin: 15.00,
     taxRate: 10.00,
     isTemplate: false,
@@ -457,22 +457,22 @@ const defaultItineraries: Itinerary[] = [
       {
         id: 'day-1',
         dayNumber: 1,
-        title: 'Arrival & Beachside Relaxation',
-        description: 'Arrive at Denpasar Airport, meet your private host, and transfer to your Nusa Dua resort.',
+        title: 'Arrival & Dal Lake Welcome',
+        description: 'Arrive at Srinagar Airport, meet your private host, and transfer to your Dal Lake retreat.',
         items: [
-          { id: 'item-1', type: 'FLIGHT', title: 'Garuda Indonesia GA99', details: 'Economy Class, Seat 24A, 24B', costPrice: 680, sellingPrice: 780 },
-          { id: 'item-2', type: 'TRANSFER', title: 'VIP Airport Welcome & Private SUV Transfer', details: 'Driver Name: Ketut. Signboard: CARTER FAMILY', costPrice: 35, sellingPrice: 45 },
-          { id: 'item-3', type: 'HOTEL', title: 'Grand Hyatt Bali', details: 'Grand Deluxe Room (1 Room, 7 Nights)', costPrice: 1470, sellingPrice: 1690 }
+          { id: 'item-1', type: 'FLIGHT', title: 'IndiGo 6E DEL-SXR Return', details: 'Flexi fare, seats 12A and 12B', costPrice: 28000, sellingPrice: 32000 },
+          { id: 'item-2', type: 'TRANSFER', title: 'Srinagar Airport Welcome & Private SUV Transfer', details: 'Driver Name: Imtiyaz. Signboard: MEHTA FAMILY', costPrice: 2200, sellingPrice: 3200 },
+          { id: 'item-3', type: 'HOTEL', title: 'Dal View Retreat Srinagar', details: 'Lake View Deluxe Room (1 Room, 5 Nights)', costPrice: 70000, sellingPrice: 84000 }
         ]
       },
       {
         id: 'day-2',
         dayNumber: 2,
-        title: 'Ubud Art & Monkey Forest Sanctuary',
-        description: 'Explore the cultural heart of Bali with private tour guides.',
+        title: 'Gulmarg Meadows & Gondola',
+        description: 'Explore Gulmarg with a private vehicle, local guide, and gondola assistance.',
         items: [
-          { id: 'item-4', type: 'TRANSFER', title: 'Full-Day Private Chauffeur Tour', details: 'Toyota Alphard luxury minivan for 10 hours', costPrice: 120, sellingPrice: 140 },
-          { id: 'item-5', type: 'ACTIVITY', title: 'Guided Monkey Forest Tour & Sacred Water Temple', details: 'VIP entry tickets and local English-speaking cultural guide included', costPrice: 80, sellingPrice: 100 }
+          { id: 'item-4', type: 'TRANSFER', title: 'Full-Day Innova Crysta Chauffeur Tour', details: 'Private vehicle for Srinagar to Gulmarg sightseeing', costPrice: 6500, sellingPrice: 8200 },
+          { id: 'item-5', type: 'ACTIVITY', title: 'Gulmarg Gondola & Local Guide Support', details: 'Phase 1 tickets and local English-speaking guide included', costPrice: 7600, sellingPrice: 9800 }
         ]
       }
     ]
@@ -486,9 +486,9 @@ const defaultBookings: Booking[] = [
     customerId: 'cust-1',
     itineraryId: 'itin-1',
     status: 'PROCESSING',
-    hotelConfirmationCode: 'GHB-876543-US',
-    driverName: 'Ketut Astawa',
-    driverPhone: '+62 811-9876-543',
+    hotelConfirmationCode: 'DVR-876543-IN',
+    driverName: 'Imtiyaz Wani',
+    driverPhone: '+91 99065 11223',
     visaStatus: 'DOCUMENTS_SUBMITTED',
     createdAt: '2026-05-18T16:30:00Z'
   }
@@ -500,7 +500,7 @@ const defaultInvoices: Invoice[] = [
     agencyId: 'agency-1',
     bookingId: 'book-1',
     invoiceNumber: 'INV-2026-001',
-    amount: 4850.00,
+    amount: 285000.00,
     dueDate: '2026-06-15',
     status: 'PARTIALLY_PAID'
   }
@@ -511,25 +511,25 @@ const defaultPayments: Payment[] = [
     id: 'pay-1',
     agencyId: 'agency-1',
     invoiceId: 'inv-1',
-    amount: 2000.00,
-    paymentMethod: 'BANK_TRANSFER',
-    transactionReference: 'TXN-982173918',
+    amount: 120000.00,
+    paymentMethod: 'UPI',
+    transactionReference: 'UPI-982173918',
     paymentDate: '2026-05-19T10:00:00Z'
   }
 ];
 
 const defaultExpenses: Expense[] = [
-  { id: 'exp-1', agencyId: 'agency-1', amount: 150.00, category: 'MARKETING', description: 'Facebook leads ads targeting honeymoon campaigns', expenseDate: '2026-05-05T09:00:00Z' },
-  { id: 'exp-2', agencyId: 'agency-1', amount: 80.00, category: 'UTILITIES', description: 'Supabase Database Addons Subscription', expenseDate: '2026-05-12T00:00:00Z' }
+  { id: 'exp-1', agencyId: 'agency-1', amount: 15000.00, category: 'MARKETING', description: 'Instagram ads for Kashmir honeymoon campaigns', expenseDate: '2026-05-05T09:00:00Z' },
+  { id: 'exp-2', agencyId: 'agency-1', amount: 8000.00, category: 'UTILITIES', description: 'Travel CRM software subscription', expenseDate: '2026-05-12T00:00:00Z' }
 ];
 
 const defaultVendorPayouts: VendorPayout[] = [
-  { id: 'pout-1', agencyId: 'agency-1', vendorId: 'vend-1', amount: 500.00, paymentDate: '2026-05-20T14:00:00Z' }
+  { id: 'pout-1', agencyId: 'agency-1', vendorId: 'vend-1', amount: 50000.00, paymentDate: '2026-05-20T14:00:00Z' }
 ];
 
 const defaultAuditLogs: AuditLog[] = [
-  { id: 'log-1', agencyId: 'agency-1', userName: 'Alara Vane', action: 'CREATE', entityType: 'Lead', details: 'Added new Lead: Bali Luxury Getaway', createdAt: '2026-05-10T14:32:00Z' },
-  { id: 'log-2', agencyId: 'agency-1', userName: 'Jane Miller', action: 'UPDATE', entityType: 'Itinerary', details: 'Modified pricing markup margins on Ubud tour days', createdAt: '2026-05-22T11:00:00Z' }
+  { id: 'log-1', agencyId: 'agency-1', userName: 'Dhruv Shah', action: 'CREATE', entityType: 'Lead', details: 'Added new Lead: Kashmir Honeymoon Escape', createdAt: '2026-05-10T14:32:00Z' },
+  { id: 'log-2', agencyId: 'agency-1', userName: 'Neha Kapoor', action: 'UPDATE', entityType: 'Itinerary', details: 'Modified pricing markup margins on Gulmarg tour day', createdAt: '2026-05-22T11:00:00Z' }
 ];
 
 export const useStore = create<CRMStore>((set, get) => ({
@@ -1040,7 +1040,7 @@ export const useStore = create<CRMStore>((set, get) => ({
       };
     });
 
-    get().logAction('CREATE', 'Payment', `Recorded payment of $${amount} for Invoice ID: ${invoiceId}`);
+    get().logAction('CREATE', 'Payment', `Recorded payment of ₹${amount} for Invoice ID: ${invoiceId}`);
   },
 
   recordExpense: (amount, category, description) => {
@@ -1055,7 +1055,7 @@ export const useStore = create<CRMStore>((set, get) => ({
     set((state) => ({
       expenses: [newExpense, ...state.expenses],
     }));
-    get().logAction('CREATE', 'Expense', `Logged expense: $${amount} under category: ${category}`);
+    get().logAction('CREATE', 'Expense', `Logged expense: ₹${amount} under category: ${category}`);
   },
 
   recordVendorPayout: (vendorId, amount) => {
@@ -1078,7 +1078,7 @@ export const useStore = create<CRMStore>((set, get) => ({
       };
     });
 
-    get().logAction('CREATE', 'VendorPayout', `Disbursed $${amount} payout to Vendor ID: ${vendorId}`);
+    get().logAction('CREATE', 'VendorPayout', `Disbursed ₹${amount} payout to Vendor ID: ${vendorId}`);
   },
 
   addVendor: (vendorData) => {

@@ -12,7 +12,8 @@ import {
   History,
   X,
   Trash2,
-  Link as LinkIcon
+  Link as LinkIcon,
+  AlertCircle
 } from 'lucide-react';
 
 export default function CustomersPage() {
@@ -305,7 +306,7 @@ export default function CustomersPage() {
                     <input
                       type="text"
                       required
-                      placeholder="e.g. visa_france.pdf"
+                      placeholder="e.g. kashmir_permit.pdf"
                       value={docName}
                       onChange={(e) => setDocName(e.target.value)}
                       className="px-2 py-1 bg-card border border-border rounded text-[11px] focus:outline-none"
@@ -352,7 +353,7 @@ export default function CustomersPage() {
                     required
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Robert"
+                    placeholder="Aarav"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
                   />
                 </div>
@@ -365,7 +366,7 @@ export default function CustomersPage() {
                     required
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Carter"
+                    placeholder="Mehta"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
                   />
                 </div>
@@ -393,7 +394,7 @@ export default function CustomersPage() {
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+1 555-9871"
+                  placeholder="+91 98765 43210"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
                 />
               </div>
@@ -407,7 +408,7 @@ export default function CustomersPage() {
                     type="text"
                     value={passportNumber}
                     onChange={(e) => setPassportNumber(e.target.value)}
-                    placeholder="US87654321"
+                    placeholder="N8765432"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
                   />
                 </div>

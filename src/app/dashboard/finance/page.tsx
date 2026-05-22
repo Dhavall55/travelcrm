@@ -126,7 +126,7 @@ export default function FinancePage() {
         <div className="p-4 bg-card border border-border rounded-xl flex flex-col justify-between min-h-[90px]">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Gross Invoiced</span>
           <div>
-            <span className="block text-xl font-bold mt-2 text-foreground">${totalInvoiced.toLocaleString()}</span>
+            <span className="block text-xl font-bold mt-2 text-foreground">₹{totalInvoiced.toLocaleString('en-IN')}</span>
             <span className="text-[9px] text-muted-foreground">Total billings generated</span>
           </div>
         </div>
@@ -135,7 +135,7 @@ export default function FinancePage() {
         <div className="p-4 bg-card border border-border rounded-xl flex flex-col justify-between min-h-[90px]">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Cash Receipts</span>
           <div>
-            <span className="block text-xl font-bold mt-2 text-emerald-500">${cashCollected.toLocaleString()}</span>
+            <span className="block text-xl font-bold mt-2 text-emerald-500">₹{cashCollected.toLocaleString('en-IN')}</span>
             <span className="text-[9px] text-emerald-500 font-semibold">
               {totalInvoiced > 0 ? Math.round((cashCollected / totalInvoiced) * 100) : 0}% collection index
             </span>
@@ -146,7 +146,7 @@ export default function FinancePage() {
         <div className="p-4 bg-card border border-border rounded-xl flex flex-col justify-between min-h-[90px]">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Operational Expenses</span>
           <div>
-            <span className="block text-xl font-bold mt-2 text-pink-500">${totalExpenses.toLocaleString()}</span>
+            <span className="block text-xl font-bold mt-2 text-pink-500">₹{totalExpenses.toLocaleString('en-IN')}</span>
             <span className="text-[9px] text-muted-foreground">Logistics + Admin overheads</span>
           </div>
         </div>
@@ -155,7 +155,7 @@ export default function FinancePage() {
         <div className="p-4 bg-card border border-border rounded-xl flex flex-col justify-between min-h-[90px]">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Disbursed Payouts</span>
           <div>
-            <span className="block text-xl font-bold mt-2 text-indigo-400">${totalPayouts.toLocaleString()}</span>
+            <span className="block text-xl font-bold mt-2 text-indigo-400">₹{totalPayouts.toLocaleString('en-IN')}</span>
             <span className="text-[9px] text-muted-foreground">Paid to service providers</span>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function FinancePage() {
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Gross Cash Profit</span>
           <div>
             <span className={`block text-xl font-bold mt-2 ${netProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-              ${netProfit.toLocaleString()}
+              ₹{netProfit.toLocaleString('en-IN')}
             </span>
             <span className="text-[9px] text-muted-foreground">Net current cash liquidity</span>
           </div>
@@ -226,7 +226,7 @@ export default function FinancePage() {
                         <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
                         <span>{inv.invoiceNumber}</span>
                       </td>
-                      <td className="py-2.5 font-bold">${Number(inv.amount).toLocaleString()}</td>
+                      <td className="py-2.5 font-bold">₹{Number(inv.amount).toLocaleString('en-IN')}</td>
                       <td className="py-2.5 text-muted-foreground">{inv.dueDate}</td>
                       <td className="py-2.5 text-center">
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
@@ -284,7 +284,7 @@ export default function FinancePage() {
                         {new Date(exp.expenseDate).toLocaleDateString()}
                       </td>
                       <td className="py-2.5 text-right font-bold text-pink-500">
-                        -${Number(exp.amount).toLocaleString()}
+                        -₹{Number(exp.amount).toLocaleString('en-IN')}
                       </td>
                     </tr>
                   ))}
@@ -324,7 +324,7 @@ export default function FinancePage() {
                           {new Date(pout.paymentDate).toLocaleDateString()}
                         </td>
                         <td className="py-2.5 text-right font-bold text-indigo-400">
-                          -${Number(pout.amount).toLocaleString()}
+                          -₹{Number(pout.amount).toLocaleString('en-IN')}
                         </td>
                       </tr>
                     );
@@ -371,7 +371,7 @@ export default function FinancePage() {
               <span className="text-muted-foreground/60 italic">No charts coordinates.</span>
             )}
             <div className="absolute flex flex-col items-center">
-              <span className="text-lg font-bold">${totalExpenses.toLocaleString()}</span>
+              <span className="text-lg font-bold">₹{totalExpenses.toLocaleString('en-IN')}</span>
               <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-wider">Debit Total</span>
             </div>
           </div>
@@ -383,7 +383,7 @@ export default function FinancePage() {
                   <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
                   <span className="font-medium uppercase">{item.name}</span>
                 </div>
-                <span className="font-bold text-foreground">${item.value.toLocaleString()}</span>
+                <span className="font-bold text-foreground">₹{item.value.toLocaleString('en-IN')}</span>
               </div>
             ))}
           </div>
@@ -404,14 +404,14 @@ export default function FinancePage() {
             <form onSubmit={handleRecordPaymentSubmit} className="space-y-4">
               <div>
                 <label className="block font-bold text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                  Received Amount ($)
+                  Received Amount (₹)
                 </label>
                 <input
                   type="number"
                   required
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
-                  placeholder="2000"
+                  placeholder="120000"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none focus:border-primary"
                 />
               </div>
@@ -480,14 +480,14 @@ export default function FinancePage() {
             <form onSubmit={handleRecordExpenseSubmit} className="space-y-4">
               <div>
                 <label className="block font-bold text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                  Overhead Amount ($)
+                  Overhead Amount (₹)
                 </label>
                 <input
                   type="number"
                   required
                   value={expAmount}
                   onChange={(e) => setExpAmount(e.target.value)}
-                  placeholder="150"
+                  placeholder="15000"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none focus:border-primary"
                 />
               </div>
@@ -517,7 +517,7 @@ export default function FinancePage() {
                   required
                   value={expDesc}
                   onChange={(e) => setExpDesc(e.target.value)}
-                  placeholder="e.g. Supabase DB Addon features payment"
+                  placeholder="e.g. Kashmir campaign creative spend"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none focus:border-primary"
                 />
               </div>

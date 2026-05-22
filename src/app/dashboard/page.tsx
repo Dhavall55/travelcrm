@@ -195,7 +195,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold mt-2">${totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold mt-2">₹{totalRevenue.toLocaleString('en-IN')}</div>
             <div className="text-[10px] text-emerald-500 font-medium mt-1">
               From {agencyPayments.length} transactions
             </div>
@@ -211,7 +211,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold mt-2">${pendingPayments.toLocaleString()}</div>
+            <div className="text-2xl font-bold mt-2">₹{pendingPayments.toLocaleString('en-IN')}</div>
             <div className="text-[10px] text-amber-400 font-medium mt-1">
               Unpaid invoices balance
             </div>
@@ -325,7 +325,7 @@ export default function DashboardPage() {
                       <td className="py-2.5 text-center text-muted-foreground">{rep.assigned}</td>
                       <td className="py-2.5 text-center text-emerald-500 font-semibold">{rep.confirmed}</td>
                       <td className="py-2.5 text-center font-medium">{rep.rate}%</td>
-                      <td className="py-2.5 text-right font-bold text-emerald-500">${rep.volume.toLocaleString()}</td>
+                      <td className="py-2.5 text-right font-bold text-emerald-500">₹{rep.volume.toLocaleString('en-IN')}</td>
                     </tr>
                   ))
                 ) : (

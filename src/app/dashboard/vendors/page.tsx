@@ -60,7 +60,7 @@ export default function VendorsPage() {
       phone: vPhone,
       address: vAddress,
       rates: [
-        { name: 'Standard Room Rate', type: 'HOTEL', price: 120 }
+        { name: 'Standard Room Rate', type: 'HOTEL', price: 6500 }
       ],
     });
 
@@ -77,7 +77,7 @@ export default function VendorsPage() {
 
     recordVendorPayout(activeVendor.id, Number(payoutAmount));
     setPayoutAmount('');
-    alert(`Payout of $${payoutAmount} registered. Vendor balance updated.`);
+    alert(`Payout of ₹${payoutAmount} registered. Vendor balance updated.`);
   };
 
   const handleAddRate = (e: React.FormEvent) => {
@@ -165,7 +165,7 @@ export default function VendorsPage() {
                     </td>
                     <td className="py-3 text-muted-foreground">{vendor.email || 'None'}</td>
                     <td className="py-3 text-right font-bold text-amber-500">
-                      ${Number(vendor.ledgerBalance).toLocaleString()}
+                      ₹{Number(vendor.ledgerBalance).toLocaleString('en-IN')}
                     </td>
                   </tr>
                 ))}
@@ -218,7 +218,7 @@ export default function VendorsPage() {
                     Ledger Account Balance
                   </span>
                   <span className="font-bold text-amber-500">
-                    ${Number(activeVendor.ledgerBalance).toLocaleString()} Owed
+                    ₹{Number(activeVendor.ledgerBalance).toLocaleString('en-IN')} Owed
                   </span>
                 </div>
 
@@ -226,7 +226,7 @@ export default function VendorsPage() {
                   <input
                     type="number"
                     required
-                    placeholder="Disburse Amount ($)"
+                    placeholder="Disburse Amount (₹)"
                     value={payoutAmount}
                     onChange={(e) => setPayoutAmount(e.target.value)}
                     className="flex-1 px-2.5 py-1.5 rounded bg-card border border-border focus:outline-none text-[11px]"
@@ -253,7 +253,7 @@ export default function VendorsPage() {
                         <p className="font-semibold text-foreground">{rate.name}</p>
                         <span className="text-[8px] text-muted-foreground uppercase font-bold">{rate.type}</span>
                       </div>
-                      <span className="font-bold text-emerald-500">${Number(rate.price).toFixed(2)}</span>
+                      <span className="font-bold text-emerald-500">₹{Number(rate.price).toLocaleString('en-IN')}</span>
                     </div>
                   ))}
                 </div>
@@ -277,7 +277,7 @@ export default function VendorsPage() {
                     <input
                       type="number"
                       required
-                      placeholder="Price ($)"
+                      placeholder="Price (₹)"
                       value={ratePrice}
                       onChange={(e) => setRatePrice(e.target.value)}
                       className="px-2 py-1 bg-card border border-border rounded text-[10px] focus:outline-none"
@@ -329,7 +329,7 @@ export default function VendorsPage() {
                   required
                   value={vName}
                   onChange={(e) => setVName(e.target.value)}
-                  placeholder="e.g. Four Seasons Resort Ubud"
+                  placeholder="e.g. Dal View Retreat Srinagar"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
                 />
               </div>
@@ -369,7 +369,7 @@ export default function VendorsPage() {
                   type="text"
                   value={vPhone}
                   onChange={(e) => setVPhone(e.target.value)}
-                  placeholder="+62 361-98765"
+                  placeholder="+91 194 245 7788"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
                 />
               </div>
@@ -382,7 +382,7 @@ export default function VendorsPage() {
                   type="text"
                   value={vAddress}
                   onChange={(e) => setVAddress(e.target.value)}
-                  placeholder="Ubud High Street, Bali"
+                  placeholder="Boulevard Road, Srinagar"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
                 />
               </div>

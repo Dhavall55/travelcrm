@@ -85,7 +85,7 @@ export default function RegisterPage() {
                   required
                   value={agencyName}
                   onChange={(e) => setAgencyName(e.target.value)}
-                  placeholder="Apex Travels"
+                  placeholder="Bharat Travel Solutions"
                   className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-800/60 border border-zinc-700/50 focus:border-indigo-500 focus:outline-none text-xs transition-colors"
                 />
               </div>
@@ -101,7 +101,7 @@ export default function RegisterPage() {
                   required
                   value={subdomain}
                   onChange={(e) => setSubdomain(e.target.value)}
-                  placeholder="apex"
+                  placeholder="bharattravel"
                   className="w-full pl-3 pr-12 py-2 rounded-lg bg-zinc-800/60 border border-zinc-700/50 focus:border-indigo-500 focus:outline-none text-xs transition-colors text-right"
                 />
                 <span className="absolute right-3 top-2.5 text-[9px] text-zinc-500 font-bold">.aero</span>
@@ -120,7 +120,7 @@ export default function RegisterPage() {
                 required
                 value={adminName}
                 onChange={(e) => setAdminName(e.target.value)}
-                placeholder="Alara Vane"
+                placeholder="Dhruv Shah"
                 className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-800/60 border border-zinc-700/50 focus:border-indigo-500 focus:outline-none text-xs transition-colors"
               />
             </div>
@@ -137,7 +137,7 @@ export default function RegisterPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@myagency.com"
+                placeholder="admin@bharattravel.in"
                 className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-800/60 border border-zinc-700/50 focus:border-indigo-500 focus:outline-none text-xs transition-colors"
               />
             </div>

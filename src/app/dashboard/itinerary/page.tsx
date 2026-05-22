@@ -171,26 +171,26 @@ export default function ItineraryPage() {
       if (newDay) {
         addItineraryItem(activeItinerary.id, newDay.id, {
           type: 'HOTEL',
-          title: 'Premium Jungle Villa Ubud Check-in',
-          details: 'Welcome drinks and private plunge pool relaxation',
-          costPrice: 280,
-          sellingPrice: 320,
+          title: 'Premium Dal Lake Retreat Check-in',
+          details: 'Kahwa welcome service and lake-view room relaxation',
+          costPrice: 14000,
+          sellingPrice: 16800,
         });
 
         addItineraryItem(activeItinerary.id, newDay.id, {
           type: 'ACTIVITY',
-          title: 'Private ATV Adventure & Sacred Temple Visit',
-          details: 'Safety gear and English-speaking guide included',
-          costPrice: 90,
-          sellingPrice: 120,
+          title: 'Private Shikara Ride & Mughal Garden Visit',
+          details: 'Local guide and sunset shikara booking included',
+          costPrice: 4500,
+          sellingPrice: 6200,
         });
 
         addItineraryItem(activeItinerary.id, newDay.id, {
           type: 'MEAL',
-          title: 'Fine Dining Sunset Degustation Menu',
-          details: '5-course organic Balinese integration at Locavore Ubud',
-          costPrice: 110,
-          sellingPrice: 140,
+          title: 'Kashmiri Wazwan Tasting Dinner',
+          details: 'Curated local dinner with vegetarian options in Srinagar',
+          costPrice: 5200,
+          sellingPrice: 6800,
         });
       }
 
@@ -305,7 +305,7 @@ export default function ItineraryPage() {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="e.g. Create a 3-item adventure day in Ubud with waterfalls and local dinner..."
+                  placeholder="e.g. Create a 3-item Srinagar day with gardens, shikara ride, and local dinner..."
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
                   className="flex-1 px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
@@ -413,8 +413,8 @@ export default function ItineraryPage() {
                           </div>
                           <div className="flex items-center space-x-3 shrink-0">
                             <div className="text-right">
-                              <span className="block font-bold text-foreground">${Number(item.sellingPrice).toLocaleString()}</span>
-                              <span className="text-[8px] text-muted-foreground">cost: ${Number(item.costPrice).toLocaleString()}</span>
+                              <span className="block font-bold text-foreground">₹{Number(item.sellingPrice).toLocaleString('en-IN')}</span>
+                              <span className="text-[8px] text-muted-foreground">cost: ₹{Number(item.costPrice).toLocaleString('en-IN')}</span>
                             </div>
                             <button
                               onClick={() => deleteItineraryItem(activeItinerary.id, day.id, item.id)}
@@ -473,27 +473,25 @@ export default function ItineraryPage() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Cumulative Items selling sum:</span>
                   <span className="font-semibold text-foreground">
-                    ${activeItinerary.days.reduce((acc, d) => acc + d.items.reduce((s, i) => s + Number(i.sellingPrice), 0), 0).toFixed(2)}
+                    ₹{activeItinerary.days.reduce((acc, d) => acc + d.items.reduce((s, i) => s + Number(i.sellingPrice), 0), 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Markup calculation (+{activeItinerary.markupMargin}%):</span>
                   <span className="font-semibold text-foreground">
-                    ${(activeItinerary.days.reduce((acc, d) => acc + d.items.reduce((s, i) => s + Number(i.sellingPrice), 0), 0) * (Number(activeItinerary.markupMargin) / 100)).toFixed(2)}
+                    ₹{(activeItinerary.days.reduce((acc, d) => acc + d.items.reduce((s, i) => s + Number(i.sellingPrice), 0), 0) * (Number(activeItinerary.markupMargin) / 100)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex justify-between border-b border-border/40 pb-2">
                   <span className="text-muted-foreground">Tax addition (+{activeItinerary.taxRate}%):</span>
                   <span className="font-semibold text-foreground">
-                    ${(
-                      (activeItinerary.days.reduce((acc, d) => acc + d.items.reduce((s, i) => s + Number(i.sellingPrice), 0), 0) * (1 + Number(activeItinerary.markupMargin) / 100)) * (Number(activeItinerary.taxRate) / 100)
-                    ).toFixed(2)}
+                    ₹{((activeItinerary.days.reduce((acc, d) => acc + d.items.reduce((s, i) => s + Number(i.sellingPrice), 0), 0) * (1 + Number(activeItinerary.markupMargin) / 100)) * (Number(activeItinerary.taxRate) / 100)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex justify-between pt-1">
                   <span className="font-bold text-sm text-foreground">Final Client Price:</span>
                   <span className="font-bold text-sm text-emerald-500">
-                    ${Number(activeItinerary.totalPrice).toLocaleString()}
+                    ₹{Number(activeItinerary.totalPrice).toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
@@ -584,7 +582,7 @@ export default function ItineraryPage() {
                   required
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Signature Luxury Bali Escape"
+                  placeholder="e.g. Signature Luxury Kashmir Escape"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none focus:border-primary"
                 />
               </div>
@@ -703,7 +701,7 @@ export default function ItineraryPage() {
                     required
                     value={itemTitle}
                     onChange={(e) => setItemTitle(e.target.value)}
-                    placeholder="e.g. Grand Hyatt Deluxe Suite"
+                    placeholder="e.g. Dal View Lake Room"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
                   />
                 </div>
@@ -718,7 +716,7 @@ export default function ItineraryPage() {
                   required
                   value={itemDetails}
                   onChange={(e) => setItemDetails(e.target.value)}
-                  placeholder="e.g. Booking Code: GHB-8765. 1 Room, 7 Nights."
+                  placeholder="e.g. Booking Code: DVR-8765. 1 Room, 5 Nights."
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
                 />
               </div>
@@ -726,27 +724,27 @@ export default function ItineraryPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block font-bold text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                    Vendor Cost Price ($)
+                    Vendor Cost Price (₹)
                   </label>
                   <input
                     type="number"
                     required
                     value={itemCost}
                     onChange={(e) => setItemCost(e.target.value)}
-                    placeholder="250"
+                    placeholder="14000"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
                   />
                 </div>
                 <div>
                   <label className="block font-bold text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                    Selling Price ($)
+                    Selling Price (₹)
                   </label>
                   <input
                     type="number"
                     required
                     value={itemSelling}
                     onChange={(e) => setItemSelling(e.target.value)}
-                    placeholder="290"
+                    placeholder="16800"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:outline-none"
                   />
                 </div>

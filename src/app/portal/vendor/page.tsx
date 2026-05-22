@@ -223,7 +223,7 @@ export default function VendorPortal() {
           <div className="p-4 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl flex items-center justify-between">
             <div className="space-y-1">
               <span className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider">Ledger Balance</span>
-              <p className="text-base font-bold text-zinc-200">${Number(activeVendor.ledgerBalance).toLocaleString()}</p>
+              <p className="text-base font-bold text-zinc-200">₹{Number(activeVendor.ledgerBalance).toLocaleString('en-IN')}</p>
             </div>
             <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl">
               <DollarSign className="w-5 h-5" />
@@ -246,7 +246,7 @@ export default function VendorPortal() {
             <div className="space-y-1">
               <span className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider">Total Disbursements</span>
               <p className="text-base font-bold text-zinc-200">
-                ${activeVendorPayouts.reduce((sum, p) => sum + p.amount, 0).toLocaleString()}
+                ₹{activeVendorPayouts.reduce((sum, p) => sum + p.amount, 0).toLocaleString('en-IN')}
               </p>
             </div>
             <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-xl">
@@ -329,7 +329,7 @@ export default function VendorPortal() {
                                 </p>
                                 <span className="text-[9px] text-zinc-500">{item.details}</span>
                               </div>
-                              <span className="font-semibold text-zinc-300 font-mono">${item.costPrice}</span>
+                              <span className="font-semibold text-zinc-300 font-mono">₹{Number(item.costPrice).toLocaleString('en-IN')}</span>
                             </div>
                           ))}
                         </div>
@@ -464,7 +464,7 @@ export default function VendorPortal() {
                             Cash Settlement to {activeVendor.name} Ledger
                           </td>
                           <td className="p-3 text-right font-bold text-emerald-400 font-mono">
-                            +${payout.amount}
+                            +₹{Number(payout.amount).toLocaleString('en-IN')}
                           </td>
                         </tr>
                       ))
@@ -519,7 +519,7 @@ export default function VendorPortal() {
                     <label className="block text-[8px] text-zinc-500 uppercase font-semibold mb-0.5">Net Rate (Cost)</label>
                     <input
                       type="number"
-                      placeholder="Cost in USD"
+                      placeholder="Cost in INR"
                       value={newRatePrice}
                       onChange={(e) => setNewRatePrice(e.target.value)}
                       required
@@ -554,7 +554,7 @@ export default function VendorPortal() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
-                        <span className="font-bold text-zinc-300 font-mono">${rate.price}</span>
+                        <span className="font-bold text-zinc-300 font-mono">₹{Number(rate.price).toLocaleString('en-IN')}</span>
                         <button
                           onClick={() => handleDeleteRate(index)}
                           className="p-1 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
@@ -582,7 +582,7 @@ export default function VendorPortal() {
                 {Object.entries(availability).map(([date, quota]) => (
                   <div key={date} className="flex justify-between items-center p-2 rounded-lg bg-zinc-900/40 border border-zinc-850">
                     <span className="font-semibold text-zinc-300 font-mono text-[10px]">
-                      {new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })}
+                      {new Date(date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', weekday: 'short' })}
                     </span>
                     <div className="flex items-center space-x-3">
                       <button

@@ -207,7 +207,7 @@ export default function CustomerPortal() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Amount Due:</span>
-                  <span className="font-bold text-zinc-200">${Number(activeInvoice.amount).toLocaleString()}</span>
+                  <span className="font-bold text-zinc-200">₹{Number(activeInvoice.amount).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between border-b border-zinc-850 pb-2">
                   <span className="text-zinc-400">Status:</span>
@@ -254,7 +254,7 @@ export default function CustomerPortal() {
                     required
                     value={docName}
                     onChange={(e) => setDocName(e.target.value)}
-                    placeholder="e.g. visa_france_approved.pdf"
+                    placeholder="e.g. kashmir_permit.pdf"
                     className="w-full px-2.5 py-1.5 rounded bg-zinc-800/60 border border-zinc-700/50 focus:outline-none text-[11px]"
                   />
                 </div>

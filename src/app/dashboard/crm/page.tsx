@@ -209,7 +209,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                 <div>
                   <h3 className="font-semibold text-xs text-foreground tracking-tight">{stage.name}</h3>
                   <span className="text-[10px] text-muted-foreground font-bold">
-                    ${stageTotalValue.toLocaleString()}
+                    ₹{stageTotalValue.toLocaleString('en-IN')}
                   </span>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-secondary text-[10px] font-bold">
@@ -233,7 +233,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                           {lead.source || 'Direct'}
                         </span>
                         <span className="text-[10px] font-bold text-emerald-500">
-                          ${Number(lead.value).toLocaleString()}
+                          ₹{Number(lead.value).toLocaleString('en-IN')}
                         </span>
                       </div>
 
@@ -287,7 +287,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                   required
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g., Honeymoon Maldives Explorer"
+                  placeholder="e.g., Kashmir Honeymoon Escape"
                   className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
                 />
               </div>
@@ -302,7 +302,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                     required
                     value={newFirstName}
                     onChange={(e) => setNewFirstName(e.target.value)}
-                    placeholder="Robert"
+                    placeholder="Aarav"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
                   />
                 </div>
@@ -315,7 +315,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                     required
                     value={newLastName}
                     onChange={(e) => setNewLastName(e.target.value)}
-                    placeholder="Carter"
+                    placeholder="Mehta"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
                   />
                 </div>
@@ -342,7 +342,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                     type="text"
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
-                    placeholder="+1 555-0192"
+                    placeholder="+91 98765 43210"
                     className="w-full px-3 py-2 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:outline-none"
                   />
                 </div>
@@ -351,7 +351,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block font-bold text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                    Est. Deal Value ($)
+                    Est. Deal Value (₹)
                   </label>
                   <input
                     type="number"
@@ -455,7 +455,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
 
                   <div>
                     <label className="block text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">
-                      Est. Value ($)
+                    Est. Value (₹)
                     </label>
                     <input
                       type="number"
@@ -633,7 +633,7 @@ const [sortBy, setSortBy] = useState<SortBy>('date');
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Discuss Bali deposits"
+                      placeholder="e.g. Discuss Kashmir advance payment"
                       value={followupNotes}
                       onChange={(e) => setFollowupNotes(e.target.value)}
                       className="flex-1 px-2.5 py-1 rounded bg-secondary border border-border focus:outline-none text-[11px]"
